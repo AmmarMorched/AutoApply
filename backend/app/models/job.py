@@ -22,6 +22,7 @@ class Job(Base):
     salary_min: Mapped[int] = mapped_column(nullable=True)
     salary_max: Mapped[int] = mapped_column(nullable=True)
     is_remote: Mapped[bool] = mapped_column(Boolean, default=False)
+    experience_level: Mapped[str] = mapped_column(String(50), nullable=True)
     keywords_found: Mapped[list] = mapped_column(ARRAY(String), default=[])
     raw_data: Mapped[dict] = mapped_column(JSONB, default={})
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

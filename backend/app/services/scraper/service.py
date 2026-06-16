@@ -1,25 +1,27 @@
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.services.scraper.google_jobs import GoogleJobsScraper
 from app.models.job import Job
 from app.schemas.job import JobCreate
+from app.services.scraper.scraper_engine import ScraperEngine
+
 
 class ScraperService:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.google_scraper = GoogleJobsScraper()
+        self.engine = ScraperEngine()
     
-    async def scrape_all(self, keywords: List[str]) -> int:
-        new_jobs = 0
-        google_jobs = await self.google_scraper.search(keywords)
-        new_jobs += await self._save_jobs(google_jobs)
-        return new_jobs
+    async def scrape_all(self, keywords: List[str], location: str = "Tunisia") -> int:
+        jobs = await self.engine.search_all(keywords)
+        return await self._save_jobs(jobs)
     
     async def _save_jobs(self, jobs: List[JobCreate]) -> int:
         new_count = 0
         
         for job_data in jobs:
+            if not job_data.external_id:
+                continue
+            
             existing = await self.db.execute(
                 select(Job).where(
                     Job.external_id == job_data.external_id,
@@ -37,13 +39,12 @@ class ScraperService:
                 description=job_data.description,
                 apply_url=job_data.apply_url,
                 source=job_data.source,
-                salary_min=job_data.salary_min,
-                salary_max=job_data.salary_max,
-                is_remote=job_data.is_remote,
+                experience_level=job_data.experience_level,
                 keywords_found=job_data.keywords_found,
             )
             self.db.add(job)
             new_count += 1
         
         await self.db.commit()
+        print(f"💾 Saved {new_count} new jobs")
         return new_count

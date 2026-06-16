@@ -2,6 +2,14 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from uuid import UUID
+from enum import Enum  # <-- ADD THIS LINE
+
+class ExperienceLevel(str, Enum):
+    JUNIOR = "junior"
+    MID = "mid"
+    SENIOR = "senior"
+    LEAD = "lead"
+    ALL = "all"
 
 class JobCreate(BaseModel):
     external_id: Optional[str] = None
@@ -14,6 +22,7 @@ class JobCreate(BaseModel):
     salary_min: Optional[int] = None
     salary_max: Optional[int] = None
     is_remote: bool = False
+    experience_level: Optional[str] = None
     keywords_found: list[str] = []
 
 class JobResponse(BaseModel):
@@ -24,6 +33,7 @@ class JobResponse(BaseModel):
     apply_url: Optional[str]
     source: str
     is_remote: bool
+    experience_level: Optional[str] = None
     created_at: datetime
     
     class Config:

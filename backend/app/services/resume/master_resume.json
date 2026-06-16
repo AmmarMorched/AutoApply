@@ -1,0 +1,99 @@
+{
+  "name": "Morched Ammar",
+  "email": "morcheda62@gmail.com",
+  "phone": "+21623875468",
+  "location": "Ariana, Tunisia",
+  "linkedin": "Linkedin@Morched_Ammar",
+  "github": "Github@Morched_Ammar",
+  "portfolio": "MorchedAmmar.com",
+  "summary": "Embedded systems engineer and full-stack developer with experience in building complete products end-to-end, from firmware and sensor-driven hardware to web applications with AI-powered features. Recent work includes a full-stack LMS platform and automotive diagnostics validated on real ECUs. Looking to bring hardware-to-cloud range to a startup building digital products for real users. Proficient in a range of technologies, including Python, Java, C/C++, and JavaScript.",
+  "experience": [
+    {
+      "title": "Final year intern - Mobile Dev",
+      "company": "Capgemini",
+      "dates": "Feb 2025 - Aout 2024",
+      "bullets": [
+        "Built a Flutter/Dart OBD-II client supporting 6 real-time PIDs with live data streaming from real ECUs",
+        "Created a Flask-based ECU simulator capable of injecting, reading, and clearing active and pending DTC fault codes",
+        "Developed integrated a Wi-Fi/TCP-IP telemetry extraction pipeline tested on a real ECU, enabling real-time diagnostics with ELM327 hardware dongle"
+      ]
+    },
+    {
+      "title": "Summer internship - Embedded System",
+      "company": "Sofrecom",
+      "dates": "July 2024 - August 2024",
+      "bullets": [
+        "Designed a REST API leveraging the 51Degrees device detection engine to identify smartphone models and retrieve environmental metrics",
+        "Implemented a Raspberry Pi backend that processed sustainability profiles and transmitted structured data to an ESP8266 over Wi-Fi",
+        "Developed delivered near-instant results on QR code scan"
+      ]
+    }
+  ],
+  "skills": [
+    "Python",
+    "Java",
+    "C/C++",
+    "JavaScript",
+    "Spring Boot",
+    "React",
+    "REST APIs",
+    "JWT",
+    "Flutter/Dart",
+    "PostgreSQL",
+    "MySQL",
+    "Mongo DB",
+    "ESP8266",
+    "ESP32",
+    "Raspberry Pi",
+    "HTTP/REST communication",
+    "Sensor-based architectures",
+    "YOLOv8",
+    "OpenCV",
+    "ONNX",
+    "Edge AI deployment",
+    "Reinforcement Learning",
+    "I2C",
+    "SPI",
+    "UART",
+    "CAN",
+    "OBD-II",
+    "MQTT",
+    "BLE",
+    "Wi-Fi",
+    "TCP/IP",
+    "HTTP",
+    "PCB design",
+    "EasyEDA",
+    "Altium",
+    "Git",
+    "STM32CubeIDE",
+    "VS Code",
+    "Flask"
+  ],
+  "education": [
+    {
+      "degree": "Bachelor's degree in electronics and automation",
+      "school": "Higher Institute of Industrial Management",
+      "year": "2018-2022"
+    },
+    {
+      "degree": "Computer engineering",
+      "school": "Private higher school of engineering and technology",
+      "year": "Sept 2022 - Oct 2025"
+    }
+  ],
+  "languages": [
+    "English (B2)",
+    "French (B2)"
+  ],
+  "certifications": [
+    {
+      "name": "Nvidia: Applications of AI for Anomaly Detection",
+      "date": "Nov 2024"
+    },
+    {
+      "name": "Nvidia: Applications of AI for Predictive Maintenance",
+      "date": "Nov 2024"
+    }
+  ]
+}

@@ -1,11 +1,13 @@
 import json
 from typing import List, Tuple
-from openai import AsyncOpenAI
+import httpx
 from app.config import settings
+
 
 class ResumeTailor:
     def __init__(self):
-        self.client = AsyncOpenAI(api_key=settings.openai_api_key)
+        self.api_key = settings.groq_api_key
+        self.api_url = "https://api.groq.com/openai/v1/chat/completions"
     
     async def tailor(
         self,
@@ -15,59 +17,84 @@ class ResumeTailor:
         company: str
     ) -> Tuple[dict, float, List[str]]:
         
-        prompt = f"""You are an expert ATS resume optimizer.
+        prompt = f"""You are an expert ATS resume optimizer. Tailor this resume for a specific job.
 
-JOB TITLE: {job_title}
-COMPANY: {company}
+=== JOB DETAILS ===
+Title: {job_title}
+Company: {company}
 
-JOB DESCRIPTION:
----
-{job_description}
----
+=== JOB DESCRIPTION ===
+{job_description[:3000]}
 
-MASTER RESUME (JSON):
----
-{json.dumps(master_resume, indent=2)}
----
+=== CANDIDATE MASTER RESUME ===
+{json.dumps(master_resume, indent=2, ensure_ascii=False)}
 
-INSTRUCTIONS:
-1. Extract the top 12-15 keywords and required skills from the job description
-2. Rewrite "summary" to naturally incorporate 5-7 of the most important keywords
-3. For each position in "experience", rewrite bullets to emphasize relevant accomplishments. DO NOT fabricate experience or technologies.
-4. Reorder "skills" so most relevant appear first
-5. Do NOT add skills I don't have
+=== INSTRUCTIONS ===
+1. Extract the 15 most important keywords/skills from the job description
+2. Rewrite "summary" to 3-4 sentences incorporating the top 5-7 keywords naturally
+3. For EACH job in "experience":
+   - Keep the original title, company, and dates exactly
+   - Rewrite ALL bullets to emphasize accomplishments relevant to THIS job
+   - Use strong action verbs (Built, Led, Optimized, Designed, Implemented)
+   - Include quantifiable results where available
+   - DO NOT fabricate experience, technologies, or numbers
+4. Reorder "skills": put matching skills first, keep all original skills, DO NOT add new ones
+5. Keep "projects" exactly as-is (do not modify project names, descriptions, or technologies)
+6. Calculate an honest match_score (0-100)
 
-Return ONLY valid JSON:
+=== OUTPUT ===
+Return ONLY valid JSON (no markdown, no explanation):
 {{
-  "summary": "rewritten summary",
+  "summary": "rewritten professional summary...",
   "experience": [
     {{
-      "title": "original title",
-      "company": "original company",
-      "dates": "original dates",
+      "title": "Original Title",
+      "company": "Original Company",
+      "dates": "Original Dates",
       "bullets": ["tailored bullet 1", "tailored bullet 2"]
     }}
   ],
-  "skills": ["most relevant first"],
+  "skills": ["most relevant first", "second", "remaining skills..."],
+  "projects": [{{"name": "", "description": "", "technologies": [], "link": "", "date": ""}}],
   "keywords_matched": ["keyword1", "keyword2"],
   "match_score": 85
-}}
-"""
+}}"""
 
-        response = await self.client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-            temperature=0.3,
-            max_tokens=2000
-        )
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
         
-        result = json.loads(response.choices[0].message.content)
+        payload = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.3,
+            "max_tokens": 3000,
+        }
         
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.post(self.api_url, json=payload, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+        
+        content = data["choices"][0]["message"]["content"].strip()
+        
+        # Clean markdown if present
+        if content.startswith("```"):
+            lines = content.split("\n")
+            content = "\n".join(lines[1:])
+        if content.endswith("```"):
+            content = content[:-3]
+        content = content.strip()
+        
+        result = json.loads(content)
+        
+        # Build tailored resume — merge tailored + original for untouched sections
         tailored = {
             "summary": result["summary"],
             "experience": result["experience"],
             "skills": result["skills"],
+            "projects": result.get("projects", master_resume.get("projects", [])),
         }
         
         return tailored, result["match_score"], result["keywords_matched"]
