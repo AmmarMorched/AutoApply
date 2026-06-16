@@ -1,1 +1,0 @@
-# Score resume against JD
