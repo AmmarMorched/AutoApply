@@ -9,7 +9,6 @@ from app.database import get_db
 from app.models.job import Job
 from app.models.resume import Resume
 from app.services.resume.tailor import ResumeTailor
-from app.services.resume.generator import DocxGenerator
 from app.services.resume.generator import PdfGenerator
 from app.services.resume.parser import ResumeParser
 from app.services.resume.structurer import ResumeStructurer
@@ -64,41 +63,73 @@ def _save_master_resume(data: dict):
 # ─────────────────────────────────────────────────
 # GENERATE TAILORED RESUME
 # ─────────────────────────────────────────────────
-@router.post("/generate/{job_id}")
-async def generate_resume(job_id: str, db: AsyncSession = Depends(get_db)):
-    """Generate an ATS-tailored resume for a specific job."""
+@router.post("/analyze/{job_id}")
+async def analyze_job(job_id: str, db: AsyncSession = Depends(get_db)):
+    """Analyze job fit BEFORE tailoring. Returns before/after scores and skill gaps."""
     
-    # Get the job
     result = await db.execute(select(Job).where(Job.id == job_id))
     job = result.scalar_one_or_none()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     
-    if not job.description:
-        raise HTTPException(status_code=400, detail="Job has no description to tailor against")
-    
-    # Load master resume
     master = _load_master_resume()
-    
-    # Tailor the resume
     tailor = ResumeTailor()
-    tailored_content, match_score, keywords = await tailor.tailor(
+    
+    analysis = await tailor.analyze(
         master,
         job.description or "",
         job.title,
         job.company
     )
     
-    # Generate DOCX
-    generator = PdfGenerator()
-    full_resume = {**master, **tailored_content}
-    docx_path = generator.generate(full_resume)
+    return {
+        "job_title": job.title,
+        "company": job.company,
+        "before_score": analysis.get("before_score", 0),
+        "predicted_after_score": analysis.get("predicted_after_score", 0),
+        "improvement": (analysis.get("predicted_after_score", 0) - analysis.get("before_score", 0)),
+        "matching_skills": analysis.get("matching_skills", []),
+        "missing_skills": analysis.get("missing_skills", []),
+        "partial_matches": analysis.get("partial_matches", []),
+        "analysis_summary": analysis.get("analysis_summary", ""),
+        "candidate_skills_found": analysis.get("candidate_skills_found", []),
+        "job_skills_required": analysis.get("job_skills_required", []),
+    }
+
+
+@router.post("/generate/{job_id}")
+async def generate_resume(job_id: str, db: AsyncSession = Depends(get_db)):
+    """Analyze + Tailor: returns analysis, tailored resume, and download link."""
     
-    # Save to database
+    result = await db.execute(select(Job).where(Job.id == job_id))
+    job = result.scalar_one_or_none()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    if not job.description:
+        raise HTTPException(status_code=400, detail="Job has no description")
+    
+    master = _load_master_resume()
+    tailor = ResumeTailor()
+    
+    # Step 1: Analyze
+    analysis = await tailor.analyze(master, job.description or "", job.title, job.company)
+    
+    # Step 2: Tailor using the analysis
+    tailored_content, match_score, keywords, changes = await tailor.tailor(
+        master, job.description or "", job.title, job.company, analysis
+    )
+    
+    # Step 3: Merge and generate PDF
+    full_resume = {**master, **tailored_content}
+    generator = PdfGenerator()
+    pdf_path = generator.generate(full_resume)
+    
+    # Step 4: Save
     resume = Resume(
         job_id=job.id,
         tailored_content=full_resume,
-        docx_path=docx_path,
+        docx_path=pdf_path,
         match_score=match_score,
         keywords_matched=keywords,
         status="completed"
@@ -109,7 +140,18 @@ async def generate_resume(job_id: str, db: AsyncSession = Depends(get_db)):
     
     return {
         "id": str(resume.id),
-        "match_score": match_score,
+        "job_title": job.title,
+        "company": job.company,
+        "analysis": {
+            "before_score": analysis.get("before_score", 0),
+            "after_score": match_score,
+            "improvement": match_score - analysis.get("before_score", 0),
+            "matching_skills": analysis.get("matching_skills", []),
+            "missing_skills": analysis.get("missing_skills", []),
+            "partial_matches": analysis.get("partial_matches", []),
+            "analysis_summary": analysis.get("analysis_summary", ""),
+        },
+        "changes_made": changes,
         "keywords_matched": keywords,
         "download_url": f"/api/v1/resumes/{resume.id}/download"
     }

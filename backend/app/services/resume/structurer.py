@@ -1,4 +1,5 @@
 import json
+from tracemalloc import start
 import httpx
 from app.config import settings
 
@@ -105,7 +106,7 @@ If a section doesn't exist in the resume, use an empty array []. DO NOT skip fie
                 content = content[:-3]
         content = content.strip()
         
-        result = json.loads(content)
+        result = self._extract_json(content)
         
         # Ensure ALL fields exist
         all_fields = [
@@ -121,6 +122,46 @@ If a section doesn't exist in the resume, use an empty array []. DO NOT skip fie
                     result[field] = ""
         
         return result
+    
+
+    def _extract_json(self, content: str) -> dict:
+        """Robust JSON extraction from AI response."""
+        if not content or not content.strip():
+            return {}
+    
+        content = content.strip()
+    
+    # Try direct parse
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            pass
+    
+    # Remove markdown code blocks
+        if content.startswith("```"):
+            first_newline = content.find("\n")
+            if first_newline != -1:
+                content = content[first_newline + 1:]
+            if content.endswith("```"):
+                content = content[:-3]
+            content = content.strip()
+    
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            pass
+    
+    # Find JSON between curly braces
+        start = content.find("{")
+        end = content.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            try:
+                return json.loads(content[start:end + 1])
+            except json.JSONDecodeError:
+                pass
+    
+        return {}
+
     
     def validate_and_clean(self, structured_resume: dict) -> dict:
         """Clean and validate the structured resume."""

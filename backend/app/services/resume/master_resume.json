@@ -5,52 +5,44 @@
   "location": "Ariana, Tunisia",
   "linkedin": "Linkedin@Morched_Ammar",
   "github": "Github@Morched_Ammar",
-  "portfolio": "MorchedAmmar.com",
-  "summary": "Embedded systems engineer and full-stack developer with experience in building complete products end-to-end, from firmware and sensor-driven hardware to web applications with AI-powered features. Recent work includes a full-stack LMS platform and automotive diagnostics validated on real ECUs. Looking to bring hardware-to-cloud range to a startup building digital products for real users. Proficient in a range of technologies, including Python, Java, C/C++, and JavaScript.",
+  "summary": "Firmware and embedded AI engineer with a track record of shipping hardware that works — from interrupt-driven STM32 firmware and FreeRTOS multitasking on ESP32 to YOLOv8 computer vision and PPO reinforcement learning deployed on edge hardware. Built and validated systems in automotive diagnostics, industrial IoT, and real-time computer vision across three internships and four independent projects. Fluent in C/C++, Python, and the full embedded protocol stack: CAN, OBD-II, MQTT, I2C, SPI, BLE.",
   "experience": [
     {
-      "title": "Final year intern - Mobile Dev",
+      "title": "Capgemini- Final year intern: mobile Dev",
       "company": "Capgemini",
-      "dates": "Feb 2025 - Aout 2024",
+      "dates": "Feb 2025/Aout 2024",
       "bullets": [
-        "Built a Flutter/Dart OBD-II client supporting 6 real-time PIDs with live data streaming from real ECUs",
-        "Created a Flask-based ECU simulator capable of injecting, reading, and clearing active and pending DTC fault codes",
-        "Developed integrated a Wi-Fi/TCP-IP telemetry extraction pipeline tested on a real ECU, enabling real-time diagnostics with ELM327 hardware dongle"
+        "Built a Flutter/Dart OBD-II client supporting 6 real-time PIDs (RPM, speed, coolant temp, throttle position, fuel level, battery voltage) with live data streaming from real ECUs in a lab environment.",
+        "Developed a Flask-based ECU simulator capable of injecting, reading, and clearing active and pending DTC fault codes, validated against a physical ECU with 100% fault code retrieval accuracy.",
+        "Integrated a Wi-Fi/TCP-IP telemetry extraction pipeline tested on a real ECU, enabling real-time diagnostics with ELM327 hardware dongle."
       ]
     },
     {
-      "title": "Summer internship - Embedded System",
+      "title": "Sofrecom-Summer internship: embedded system",
       "company": "Sofrecom",
-      "dates": "July 2024 - August 2024",
+      "dates": "July 2024/ August 2024",
       "bullets": [
-        "Designed a REST API leveraging the 51Degrees device detection engine to identify smartphone models and retrieve environmental metrics",
-        "Implemented a Raspberry Pi backend that processed sustainability profiles and transmitted structured data to an ESP8266 over Wi-Fi",
-        "Developed delivered near-instant results on QR code scan"
+        "Developed a REST API leveraging the 51Degrees device detection engine to identify smartphone models and retrieve 14 environmental metrics including eco-rating, repairability, and climate efficiency scores.",
+        "Built a Raspberry Pi backend that processed 14-parameter sustainability profiles and transmitted structured data to an ESP8266 over Wi-Fi, delivering near-instant results on QR code scan"
       ]
     }
   ],
   "skills": [
     "Python",
     "Java",
-    "C/C++",
+    "C",
+    "C++",
     "JavaScript",
-    "Spring Boot",
-    "React",
-    "REST APIs",
-    "JWT",
-    "Flutter/Dart",
-    "PostgreSQL",
-    "MySQL",
-    "Mongo DB",
     "ESP8266",
     "ESP32",
     "Raspberry Pi",
-    "HTTP/REST communication",
+    "HTTP",
+    "REST",
     "Sensor-based architectures",
     "YOLOv8",
     "OpenCV",
     "ONNX",
-    "Edge AI deployment",
+    "Edge AI",
     "Reinforcement Learning",
     "I2C",
     "SPI",
@@ -61,14 +53,59 @@
     "BLE",
     "Wi-Fi",
     "TCP/IP",
-    "HTTP",
     "PCB design",
     "EasyEDA",
     "Altium",
+    "Sensor integration",
+    "Actuator control",
     "Git",
     "STM32CubeIDE",
+    "Arduino IDE",
     "VS Code",
+    "Flutter",
+    "Dart",
     "Flask"
+  ],
+  "projects": [
+    {
+      "name": "TrafficOS — Deep RL Intersection Controller",
+      "description": "Engineered a custom OpenAI Gymnasium environment modeling a 4-way intersection with an 8-dimensional observation space (per-lane vehicle density + emergency vehicle priority flags). Trained a PPO agent (Stable Baselines3) over 500,000 timesteps, achieving a 30–35% reduction in average vehicle wait time vs. fixed-timer controllers.",
+      "technologies": [
+        "OpenAI Gymnasium",
+        "PPO",
+        "Stable Baselines3",
+        "Raspberry Pi 5",
+        "ONNX"
+      ],
+      "link": "",
+      "date": ""
+    },
+    {
+      "name": "Padel Player Tracking — Computer Vision & IoT",
+      "description": "Engineered modular embedded firmware in C on STM32F407VG managing 3 sensors (LEM LTS 6-NP, DHT11, PIR) across I2C and SPI buses with a layered driver architecture enabling sensor hot-swap without core firmware changes. Implemented MQTT-over-Wi-Fi cloud pipeline for continuous telemetry upload, enabling remote monitoring and real-time actuation commands from a cloud dashboard.",
+      "technologies": [
+        "STM32F407VG",
+        "I2C",
+        "SPI",
+        "MQTT",
+        "Wi-Fi"
+      ],
+      "link": "",
+      "date": ""
+    },
+    {
+      "name": "IoT Energy Monitoring System — STM32F407VG",
+      "description": "Engineered modular embedded firmware in C on STM32F407VG managing 3 sensors (LEM LTS 6-NP, DHT11, PIR) across I2C and SPI buses with a layered driver architecture enabling sensor hot-swap without core firmware changes. Implemented MQTT-over-Wi-Fi cloud pipeline for continuous telemetry upload, enabling remote monitoring and real-time actuation commands from a cloud dashboard.",
+      "technologies": [
+        "STM32F407VG",
+        "I2C",
+        "SPI",
+        "MQTT",
+        "Wi-Fi"
+      ],
+      "link": "",
+      "date": ""
+    }
   ],
   "education": [
     {
@@ -77,7 +114,7 @@
       "year": "2018-2022"
     },
     {
-      "degree": "Computer engineering",
+      "degree": "Bachelor's degree in computer engineering",
       "school": "Private higher school of engineering and technology",
       "year": "Sept 2022 - Oct 2025"
     }
@@ -87,13 +124,10 @@
     "French (B2)"
   ],
   "certifications": [
-    {
-      "name": "Nvidia: Applications of AI for Anomaly Detection",
-      "date": "Nov 2024"
-    },
-    {
-      "name": "Nvidia: Applications of AI for Predictive Maintenance",
-      "date": "Nov 2024"
-    }
+    "Nvidia: Applications of AI for Anomaly Detection (Nov2024)",
+    "Nvidia: Applications of AI for Predictive Maintenance (Nov2024)"
+  ],
+  "other": [
+    "Member: Robotic club, Ider Club, Higher Institute of Industrial Management (2019)"
   ]
 }
